@@ -21,9 +21,9 @@ Collect the following, and ask for anything that's missing in one message:
 |---|---|
 | Account | `setapak` or `setia_alam` |
 | Drive folder | Folder link, ID or name. Search with `search_files` `title contains '<name>' and mimeType = 'application/vnd.google-apps.folder'` |
-| Campaign name | Folder name |
-| Daily budget (RM) | **Required, ask.** Must be ≥ `min_daily_budget_rm`. Pass to Meta in sen (RM × 100). |
-| Location | Malaysia-wide (`countries:["MY"]`) **or** a city from `config/cities.json` (+ optional radius override). Always ask. |
+| Campaign name | The campaign the user built (or duplicated) in Ads Manager, switched off, with the Broad ad set and one first ad (see Step 5) |
+| Daily budget (RM) | **Required, ask.** The user sets it on the campaign in Ads Manager. Claude reads it back (`daily_budget` at campaign level) and confirms it matches. |
+| Location | Malaysia-wide **or** a city + radius. Always ask. The user sets it on the Broad ad set. Claude checks `targeting.geo_locations` matches. |
 | Languages | BM + EN + CN (all locale IDs in `defaults.languages`) unless the user narrows it |
 | Pics or videos | Whatever the folder holds. If it has both, ask: pics only, videos only, or mixed (max 10 total) |
 

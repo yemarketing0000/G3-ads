@@ -20,3 +20,8 @@ Goal: test the workflow end-to-end without publishing.
 ## Next
 - User: set the default advertiser and payer for Malaysia on both G3 ad accounts.
 - Then re-run from Step 5 on campaign `120253825355480526`, or delete it.
+
+## Retry after the user set the default advertiser/payer (same day)
+- Ad set create with `WHATSAPP` → still `3858634` "Advertiser is missing".
+- Same call with `dsa_beneficiary` and `dsa_payor` = "G3 Pro Tint X CC" → still `3858634`.
+- Conclusion: the Ads Manager default does not reach ad sets made through the Meta MCP tool, and the tool cannot send Malaysia's verified-advertiser field. **New split:** the user creates the campaign and the "Broad" ad set in Ads Manager (which also allows Messenger + WhatsApp). Claude does everything else: media, creatives, ads, previews, publish.

@@ -25,3 +25,10 @@ Goal: test the workflow end-to-end without publishing.
 - Ad set create with `WHATSAPP` → still `3858634` "Advertiser is missing".
 - Same call with `dsa_beneficiary` and `dsa_payor` = "G3 Pro Tint X CC" → still `3858634`.
 - Conclusion: the Ads Manager default does not reach ad sets made through the Meta MCP tool, and the tool cannot send Malaysia's verified-advertiser field. **New split:** the user creates the campaign and the "Broad" ad set in Ads Manager (which also allows Messenger + WhatsApp). Claude does everything else: media, creatives, ads, previews, publish.
+
+## After the user built the ad set in Ads Manager
+- User's ad set: **Broad** `120253826411920526`, `MESSAGING_MESSENGER_WHATSAPP`, CONVERSATIONS, MY, 18+, Advantage+ audience. **No locales set.** User's placeholder ad "TEST" `120253826411930526`.
+- `ads_create_creative` + `ads_create_ad` with `creative_id` → "Creative is missing DOF spec" (tried with and without `degrees_of_freedom_spec`).
+- **Worked:** `ads_create_ad` with an inline creative: `video_data` + `call_to_action MESSAGE_PAGE/MESSENGER` + `asset_feed_spec {optimization_type: DOF_MESSAGING_DESTINATION, call_to_actions: [MESSAGE_PAGE→MESSENGER, WHATSAPP_MESSAGE→WHATSAPP]}` + `degrees_of_freedom_spec text_optimizations OPT_OUT`.
+  → ad **"video2 | BM"** `120253826614110526`, PAUSED, previews returned for FB Feed, IG Feed, Stories, Reels and Marketplace.
+- Unused test creatives left in the library: `2618012065312100`, `1680917006821926`.

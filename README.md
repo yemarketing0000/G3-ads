@@ -16,17 +16,22 @@ G3 Ads/
 ```
 Existing names like `Video 1 RM99.mp4` also work. The number after "pic" or "video" is what counts.
 
-## 2. Ask Claude
-> Launch G3 Setapak, folder "2026-11 Nov Promo", RM80/day, Malaysia
+## 2. In Ads Manager (about 1 minute)
+Meta only lets you set Malaysia's verified advertiser and the **Messenger + WhatsApp** destination in Ads Manager. So you:
+1. Create (or **duplicate** the last) campaign → ad set **Broad** → **one ad** (any pic/video, text "test" is fine).
+2. Turn the **campaign off** and click **Publish**.
 
-> Launch Setia Alam, folder "Nov Promo", RM50/day, Setia Alam 20km, Chinese only
+## 3. Ask Claude
+> Launch G3 Setapak, folder "2026-11 Nov Promo", campaign "Nov Promo" (already off in Ads Manager)
 
-## 3. What happens
+> Launch Setia Alam, folder "Nov Promo", campaign "SA Nov", Chinese only
+
+## 4. What happens
 | Step | What Claude does | You |
 |---|---|---|
 | 1 | Reads the folder and copy, then shows a **check table**: account, budget, location, languages, each ad + language + headline | Reply OK or ask for changes |
 | 2 | Shares only those files by link so Meta can download them, then uploads to your ad account | – |
-| 3 | Builds the campaign (CBO) → ad set **Broad** (Advantage+ audience and placements, age 18+, Malay/English/Chinese) → one ad per pic/video, button **Send message** (WhatsApp or Messenger) | – |
+| 3 | Finds your **Broad** ad set, checks its settings, and adds one ad per pic/video with your copy. Button: **Send message**, and Meta picks WhatsApp or Messenger for each person | – |
 | 4 | Shows draft IDs and **preview links**, plus any problem (e.g. WhatsApp not linked to the Page) | Say **"publish"** to go live, or leave it as a draft |
 | 5 | Publishes, checks the status, saves a log in `launches/` | Turn Drive link-sharing back off if you like |
 

@@ -12,5 +12,6 @@ Everything runs through the connected MCP tools (`mcp__Google_Drive__*`, `mcp__M
 1. Never publish or activate anything without an explicit OK from the user in the current conversation. Two stop points: after the plan table, and after the draft and previews.
 2. Ask for daily budget (RM) and location (Malaysia or a city) on every launch. Never reuse them silently.
 3. Andromeda setup: 1 CBO campaign → 1 ad set named `Broad` → up to 10 ads (one per pic/video). Advantage+ audience and placements on. No interests.
+   The user creates the campaign, the Broad ad set and a first ad in Ads Manager (Malaysia's verified advertiser and Messenger + WhatsApp can't be set via the MCP tool). Claude adds the ads using the inline multi-destination creative in `config/defaults.json`.
 4. Use ad copy from the Drive copy file exactly as written.
 5. Only the two G3 ad accounts in `config/accounts.json`.

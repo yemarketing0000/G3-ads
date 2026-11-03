@@ -64,42 +64,35 @@ For each approved missing file:
 3. If the URL upload fails (HTML instead of media, or a size error), fall back: ask the user to upload that file in **Ads Manager → Media Library** for this ad account, then find it with `ads_get_ad_videos` / `ads_get_ad_images` (`title` / `name` filter).
 4. After all uploads, list the shared Drive files and tell the user they can turn link-sharing off (Share → General access → Restricted). The Drive tools here cannot remove a permission. Meta keeps its own copy, so turning sharing off is safe.
 
-## Step 5: Build the draft or paused campaign
-1. **Campaign:** `ads_create_campaign`
-   - `ad_account_id`, `campaign_name` (from `name_pattern`), `objective: "OUTCOME_ENGAGEMENT"`, `buying_type: "AUCTION"`
-   - `campaign_daily_budget: <RM×100>`, `campaign_bid_strategy: "LOWEST_COST_WITHOUT_CAP"`, `special_ad_categories: "[]"`
-   - Check the response's `valid_optimization_goals` for CONVERSATIONS.
-2. **Ad set:** `ads_create_ad_set`
-   - `ad_set_name: "Broad"`, `campaign_id`, `optimization_goal: "CONVERSATIONS"`, `billing_event: "IMPRESSIONS"`
-   - `destination_type`: try `"MESSAGING_MESSENGER_WHATSAPP"` (Messenger + WhatsApp) first. As of 2026-11-03 the tool rejects it ("requires a messaging destination_type"). In that case use `"WHATSAPP"`, and in Step 6 tell the user to switch **Ad set → Message destination → Messenger and WhatsApp** in Ads Manager before publishing. That is one click.
-   - Error "Advertiser is missing: Provide a verified advertiser": Malaysia requires a default advertiser/payer. Stop and tell the user to set it once in Ads Manager (desktop) → Advertising settings → Default advertiser and payer → Malaysia, for this ad account. Then retry.
-   - `promoted_object: {"page_id":"<page_id>"}`
-   - `targeting` (JSON string):
-     - Malaysia: `{"geo_locations":{"countries":["MY"],"location_types":["home","recent"]},"age_min":18,"locales":[41,6,24,20,21,22]}`
-     - City with `meta_place`: `{"geo_locations":{"places":[{"key":"281386432021532","radius":16,"distance_unit":"mile"}],"location_types":["home","recent"]},...}`
-     - Other city: `{"geo_locations":{"custom_locations":[{"latitude":3.1046,"longitude":101.459,"radius":25,"distance_unit":"kilometer"}],"location_types":["home","recent"]},...}`
-     - `locales` = the union of the chosen languages' IDs.
-     - Do **not** send `targeting_automation` (Advantage+ audience stays on) or any `publisher_platforms` / `*_positions` (Advantage+ placements).
-   - No budget on the ad set (CBO).
-3. **Per creative:** `ads_create_creative`
-   - `ad_account_id`, `page_id`, `name: "<campaign> | <kind><n> | <lang>"`
-   - Image: `image_hash`. Video: `video_id` + thumbnail (`image_hash` of the cover, else `image_url` = the video's `picture`).
-   - `message` = primary_text, `headline` = headline for its language.
-   - `call_to_action_type`: `"WHATSAPP_MESSAGE"` for a WHATSAPP ad set, or `"MESSAGE_PAGE"` for MESSENGER (no `link_url`).
-   - If the ad set really is multi-destination and Meta asks for a `degrees_of_freedom_spec` ("Creative is missing DOF spec…"), build the spec the error describes and save the working spec to `config/defaults.json`.
-   - `instagram_user_id` from config if not null.
-   - Do not set `self_ai_disclosure` yourself. If the user said media is AI-made, ask.
+## Step 5: Find the user's Broad ad set, then add the ads
+**Who does what (verified 2026-11-03):** the Meta MCP tool cannot create ad sets that target Malaysia (Meta error 3858634, "Advertiser is missing: Provide a verified advertiser"), and it cannot set Messenger + WhatsApp. So the **user** creates the campaign, the Broad ad set and **one first ad** in Ads Manager, then publishes it with the campaign switched **off**. An ad set with no ads stays an unpublished draft, which the tools cannot see. Duplicating last launch's campaign in Ads Manager is the fastest way to do this. Claude adds every other ad.
 
-   Then `ads_create_ad` with `ad_set_id`, `ad_name: "<kind><n> | <lang>"`, `creative: {"creative_id":"<id>"}`. Use `hide_ui: true` when there are many.
-4. **Validate:** `ads_get_ad_entities` with `object_state: "draft"` and `object_ids: [campaign_id]`. For every `active_errors` item:
-   - WhatsApp not linked to the Page, or multi-destination rejected: tell the user. Offer Messenger only (`MESSENGER` + `MESSAGE_PAGE`, no DOF spec), or WhatsApp only (`WHATSAPP` + `WHATSAPP_MESSAGE`, after they connect WhatsApp in Meta Business Suite → Settings → WhatsApp accounts). Use whichever they pick.
-   - Instagram identity missing: tell the user. Recommend linking IG. Otherwise, with their OK, restrict placements to Facebook + Messenger + WhatsApp.
-   - Locale rejected: drop `locales` and say so.
-   - Anything else: fix with `ads_update_entity`, or report it.
-5. **Previews:** `ads_get_ad_preview` for 1–2 ads (use `creative_id` if the draft `ad_id` fails). Give the `preview_url` links.
+1. **Ask the user** (at Step 1) to do this and tell you the campaign name. Remind them to set: Messaging apps → Messenger + WhatsApp, the location you agreed, age 18+, languages Malay/English/Chinese, Advantage+ audience and placements on, verified advertiser, CBO budget, campaign OFF.
+2. **Find it:** `ads_get_ad_entities` with `level: "adset"`, `filtering` name CONTAIN "Broad", `sort: "created_time_descending"`, and fields `id,name,campaign_id,effective_status,destination_type,targeting`. Then check:
+   - `destination_type` is `MESSAGING_MESSENGER_WHATSAPP`.
+   - The location matches what was agreed.
+   - `targeting.locales` is set. If it's missing, tell the user the languages were not set. Advantage+ still works without it.
+   - If it's not found, the ad set is probably still a draft. Ask the user to add one ad and publish with the campaign off.
+3. **Per creative:** `ads_create_ad` with an **inline** creative. Do NOT use `ads_create_creative` for this, because a separate creative fails with "Creative is missing DOF spec" on Messenger + WhatsApp ad sets.
+   - `ad_set_id`, `ad_name: "<kind><n> | <lang>"`, `hide_ui: true` when there are many.
+   - `creative` (JSON string):
+     ```json
+     {"name":"<campaign> | <kind><n> | <lang>",
+      "object_story_spec":{"page_id":"<page_id>",
+        "video_data":{"video_id":"<id>","image_url":"<video picture or cover>","message":"<primary_text>","title":"<headline>",
+                      "call_to_action":{"type":"MESSAGE_PAGE","value":{"app_destination":"MESSENGER"}}}},
+      "asset_feed_spec": <defaults.creative.asset_feed_spec>,
+      "degrees_of_freedom_spec": <defaults.creative.degrees_of_freedom_spec>}
+     ```
+   - For an image, use `"link_data":{"image_hash":"<hash>","message":...,"name":"<headline>","link":"https://www.facebook.com/<page_id>","call_to_action":{"type":"MESSAGE_PAGE","value":{"app_destination":"MESSENGER"}}}` instead of `video_data`. Verify this on the first pic launch and fix the runbook if Meta asks for a different shape.
+   - `text_optimizations` is OPT_OUT on purpose: the copy runs exactly as written.
+   - Do not set `self_ai_disclosure` yourself. If the user says media is AI-made, ask.
+4. **Placeholder ad:** if the user's first ad was only a placeholder (e.g. text "test"), offer to pause it with `ads_update_entity` and `{"status":"PAUSED"}`, so only the real ads run. Never delete without asking.
+5. **Check:** any error returned from `ads_create_ad`, fix it and retry once, or report it. If Meta says something about Instagram: no IG account is linked, and the user said IG linking is not needed (2026-11-03). Ask before limiting placements to Facebook only.
+6. **Previews:** `ads_create_ad` already returns `previews[].preview_url`. Give 2–3 of them (Facebook Feed, Reels, Stories), or call `ads_get_ad_preview`.
 
 ## Step 6: Final approval (STOP #2)
-Show the campaign, ad set and ad IDs, preview links, warnings, and the Drive files to un-share.
+Show the campaign, ad set and ad IDs, preview links, any warnings, and the Drive files to un-share.
 Ask: "Publish now? It goes live and starts spending RM<x>/day."
 - If the objects are PAUSED (not drafts): on an explicit yes, call `ads_activate_entity` top-down, one call each for the campaign, the ad set and every ad.
 - If they are drafts: on an explicit yes, `ads_activate_entity` with `entity_type: "campaign"`, `entity_id: <campaign_id>`, and `object_ids` = [campaign, ad set, all ads] (from the draft read). Set `publish_as_active: true` only if they said go live.

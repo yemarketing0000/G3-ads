@@ -32,3 +32,6 @@ Goal: test the workflow end-to-end without publishing.
 - **Worked:** `ads_create_ad` with an inline creative: `video_data` + `call_to_action MESSAGE_PAGE/MESSENGER` + `asset_feed_spec {optimization_type: DOF_MESSAGING_DESTINATION, call_to_actions: [MESSAGE_PAGE→MESSENGER, WHATSAPP_MESSAGE→WHATSAPP]}` + `degrees_of_freedom_spec text_optimizations OPT_OUT`.
   → ad **"video2 | BM"** `120253826614110526`, PAUSED, previews returned for FB Feed, IG Feed, Stories, Reels and Marketplace.
 - Unused test creatives left in the library: `2618012065312100`, `1680917006821926`.
+
+## Clean-up
+- At the user's request, test campaign `120253825355480526` was set to **DELETED** (confirmed by read-back). Its Broad ad set and both ads went with it.

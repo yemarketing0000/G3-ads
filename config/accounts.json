@@ -1,0 +1,31 @@
+{
+  "business": { "id": "1674100607220513", "name": "G3 Pro Tint X CC" },
+  "accounts": {
+    "setapak": {
+      "label": "Setapak",
+      "ad_account_id": "889018630434588",
+      "ad_account_name": "G3 PRO TINT Setapak",
+      "page_id": "1277296285476730",
+      "page_name": "G3 Pro tint - Setapak",
+      "instagram_user_id": null,
+      "home_city": "setapak",
+      "currency": "MYR",
+      "min_daily_budget_rm": 4.08
+    },
+    "setia_alam": {
+      "label": "Setia Alam",
+      "ad_account_id": "1097140736142240",
+      "ad_account_name": "G3 Setia alam",
+      "page_id": "1327702287093457",
+      "page_name": "G3 PRO TINT Setia Alam",
+      "instagram_user_id": null,
+      "home_city": "setia_alam",
+      "currency": "MYR",
+      "min_daily_budget_rm": 4.08
+    }
+  },
+  "notes": [
+    "instagram_user_id is null: ads_get_ig_accounts returned no Instagram account linked to either ad account (checked 2026-11-03). Link IG in Business Settings > Accounts > Instagram, then fill this in.",
+    "Never put RamC / OM SPACE / other ad accounts in this workflow."
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "comment": "Presets for city-level launches. 'meta_place' entries are verified Meta location keys (geo_locations.places). Others use geo_locations.custom_locations (lat/long pin + radius) which needs no key lookup. Radius in km unless stated.",
+  "setapak":     { "name": "Setapak",      "meta_place": { "key": "281386432021532", "radius": 16, "distance_unit": "mile" }, "latitude": 3.0837, "longitude": 101.70224, "radius_km": 25 },
+  "setia_alam":  { "name": "Setia Alam",   "latitude": 3.1046, "longitude": 101.4590, "radius_km": 25 },
+  "kuala_lumpur":{ "name": "Kuala Lumpur", "latitude": 3.1390, "longitude": 101.6869, "radius_km": 25 },
+  "shah_alam":   { "name": "Shah Alam",    "latitude": 3.0733, "longitude": 101.5185, "radius_km": 20 },
+  "petaling_jaya":{"name": "Petaling Jaya","latitude": 3.1073, "longitude": 101.6067, "radius_km": 15 },
+  "klang":       { "name": "Klang",        "latitude": 3.0449, "longitude": 101.4456, "radius_km": 20 },
+  "cheras":      { "name": "Cheras",       "latitude": 3.0890, "longitude": 101.7440, "radius_km": 15 },
+  "puchong":     { "name": "Puchong",      "latitude": 3.0250, "longitude": 101.6170, "radius_km": 15 },
+  "subang_jaya": { "name": "Subang Jaya",  "latitude": 3.0438, "longitude": 101.5806, "radius_km": 15 },
+  "kajang":      { "name": "Kajang",       "latitude": 2.9935, "longitude": 101.7874, "radius_km": 15 },
+  "seremban":    { "name": "Seremban",     "latitude": 2.7258, "longitude": 101.9424, "radius_km": 25 },
+  "johor_bahru": { "name": "Johor Bahru",  "latitude": 1.4927, "longitude": 103.7414, "radius_km": 25 },
+  "penang":      { "name": "George Town, Penang", "latitude": 5.4141, "longitude": 100.3288, "radius_km": 25 },
+  "ipoh":        { "name": "Ipoh",         "latitude": 4.5975, "longitude": 101.0901, "radius_km": 25 },
+  "melaka":      { "name": "Melaka",       "latitude": 2.1896, "longitude": 102.2501, "radius_km": 25 },
+  "kota_kinabalu":{"name": "Kota Kinabalu","latitude": 5.9804, "longitude": 116.0735, "radius_km": 25 },
+  "kuching":     { "name": "Kuching",      "latitude": 1.5535, "longitude": 110.3593, "radius_km": 25 }
+}

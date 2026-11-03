@@ -1,0 +1,72 @@
+{
+  "campaign": {
+    "objective": "OUTCOME_ENGAGEMENT",
+    "buying_type": "AUCTION",
+    "budget_mode": "CBO",
+    "campaign_bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+    "special_ad_categories": "[]",
+    "name_pattern": "G3 | {account_label} | {campaign_name} | MSG | {yyyy-mm-dd}"
+  },
+  "ad_set": {
+    "name": "Broad",
+    "destination_type": "MESSAGING_MESSENGER_WHATSAPP",
+    "optimization_goal": "CONVERSATIONS",
+    "billing_event": "IMPRESSIONS",
+    "promoted_object": "{\"page_id\": \"<page_id>\"}",
+    "age_min": 18,
+    "advantage_audience": "on (omit targeting_automation)",
+    "placements": "Advantage+ (omit publisher_platforms and *_positions)",
+    "default_geo": {
+      "countries": [
+        "MY"
+      ]
+    },
+    "location_types": [
+      "home",
+      "recent"
+    ],
+    "destination_comment": "Messenger + WhatsApp (same as live 'Broad 1 - pic'). Meta routes each person to the app they reply on most.",
+    "destination_type_alt_whatsapp_only": "WHATSAPP",
+    "destination_type_alt_messenger_only": "MESSENGER"
+  },
+  "languages": {
+    "comment": "Meta locale IDs copied from the live 'Broad 1 - pic' ad set in G3 Setapak (proven to work).",
+    "BM": [
+      41
+    ],
+    "EN": [
+      6,
+      24
+    ],
+    "CN": [
+      20,
+      21,
+      22
+    ],
+    "default_set": [
+      "BM",
+      "EN",
+      "CN"
+    ]
+  },
+  "creative": {
+    "call_to_action_type": "MESSAGE_PAGE",
+    "max_creatives": 10,
+    "file_pattern_pic": "^\\s*(pic|picture|image|img)\\s*[-_ ]?\\s*(\\d{1,2})\\b",
+    "file_pattern_video": "^\\s*(video|vid)\\s*[-_ ]?\\s*(\\d{1,2})\\b",
+    "cover_pattern": "^(video|vid)\\s*[-_ ]?\\s*(\\d{1,2}).*(cover|封面|thumb)",
+    "language_rotation": [
+      "BM",
+      "EN",
+      "CN"
+    ],
+    "ad_name_pattern": "{kind}{n} | {lang}",
+    "cta_comment": "MESSAGE_PAGE matches the user's live creatives. WhatsApp-only fallback uses WHATSAPP_MESSAGE.",
+    "degrees_of_freedom_spec": null,
+    "degrees_of_freedom_spec_comment": "Multi-destination creatives need a DOF spec. Filled in from the first dry run; until then use what Meta's active_errors asks for."
+  },
+  "drive": {
+    "root_folder_name": "G3 Ads",
+    "direct_download_url": "https://drive.usercontent.google.com/download?id={file_id}&export=download&confirm=t"
+  }
+}

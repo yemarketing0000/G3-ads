@@ -9,7 +9,7 @@ Config lives in `config/accounts.json`, `config/defaults.json` and `config/citie
 Every Meta tool call needs `advertiser_job: "create_and_launch_new_ads"`, the same `client_conversation_id` for the whole conversation, and the user's own words in `advertiser_request`.
 
 **Hard rules**
-- Never publish without an explicit "go", "publish" or "approve" from the user at **Step 6**. Draft mode keeps everything unpublished until `ads_activate_entity`.
+- Never publish without an explicit "go", "publish" or "approve" from the user at **Step 6**. New objects are created either as drafts or as real **PAUSED** objects (G3 Setapak gave PAUSED on 2026-11-03). Neither spends until `ads_activate_entity`.
 - Never guess the budget. Ask for the budget **and** the location on every launch, even if one was used last time.
 - Only use the two G3 accounts in `config/accounts.json`.
 - Set Drive "anyone with link" only on the files picked for this launch.
@@ -51,8 +51,12 @@ Ads (n):
 Drive: these n files will be set to "Anyone with the link can view" so Meta can download them.
 ```
 
-## Step 4: Upload media to Meta
-For each creative, plus each video cover:
+## Step 4: Get media into Meta (library first)
+**4a. Reuse what Meta already has.** Call `ads_get_ad_videos` (title filter, e.g. `"Video 1"`) and `ads_get_ad_images` (name filter) on the ad account. If an item's title equals the Drive file title, or contains it, reuse its `video_id` / `image_hash`. Do not upload it again. Show matches in the Step 3 table as "already in Meta".
+
+**4b. Only for files still missing,** ask the user once, listing the files: "OK to set these to *anyone with link* in Drive so Meta can download them? Or upload them to Ads Manager → Media Library yourself." Claude Code's safety check blocks link-sharing unless the user approves the prompt. If it is denied, do not retry or work around it. Use the manual-upload route.
+
+For each approved missing file:
 1. `mcp__Google_Drive__share_file` with `fileId`, `role: "reader"`, `permissionId: "anyoneWithLink"`.
 2. `mcp__META__ads_creative_upload_media` with `upload_source: "URL"`, `media_type: IMAGE|VIDEO`, `media_url: https://drive.usercontent.google.com/download?id=<fileId>&export=download&confirm=t`, and `name: "<campaign> - <file title>"`.
    - IMAGE: keep the returned `image_hash`.
@@ -60,13 +64,15 @@ For each creative, plus each video cover:
 3. If the URL upload fails (HTML instead of media, or a size error), fall back: ask the user to upload that file in **Ads Manager → Media Library** for this ad account, then find it with `ads_get_ad_videos` / `ads_get_ad_images` (`title` / `name` filter).
 4. After all uploads, list the shared Drive files and tell the user they can turn link-sharing off (Share → General access → Restricted). The Drive tools here cannot remove a permission. Meta keeps its own copy, so turning sharing off is safe.
 
-## Step 5: Build the draft
+## Step 5: Build the draft or paused campaign
 1. **Campaign:** `ads_create_campaign`
    - `ad_account_id`, `campaign_name` (from `name_pattern`), `objective: "OUTCOME_ENGAGEMENT"`, `buying_type: "AUCTION"`
    - `campaign_daily_budget: <RM×100>`, `campaign_bid_strategy: "LOWEST_COST_WITHOUT_CAP"`, `special_ad_categories: "[]"`
    - Check the response's `valid_optimization_goals` for CONVERSATIONS.
 2. **Ad set:** `ads_create_ad_set`
-   - `ad_set_name: "Broad"`, `campaign_id`, `destination_type: "MESSAGING_MESSENGER_WHATSAPP"` (WhatsApp + Messenger), `optimization_goal: "CONVERSATIONS"`, `billing_event: "IMPRESSIONS"`
+   - `ad_set_name: "Broad"`, `campaign_id`, `optimization_goal: "CONVERSATIONS"`, `billing_event: "IMPRESSIONS"`
+   - `destination_type`: try `"MESSAGING_MESSENGER_WHATSAPP"` (Messenger + WhatsApp) first. As of 2026-11-03 the tool rejects it ("requires a messaging destination_type"). In that case use `"WHATSAPP"`, and in Step 6 tell the user to switch **Ad set → Message destination → Messenger and WhatsApp** in Ads Manager before publishing. That is one click.
+   - Error "Advertiser is missing: Provide a verified advertiser": Malaysia requires a default advertiser/payer. Stop and tell the user to set it once in Ads Manager (desktop) → Advertising settings → Default advertiser and payer → Malaysia, for this ad account. Then retry.
    - `promoted_object: {"page_id":"<page_id>"}`
    - `targeting` (JSON string):
      - Malaysia: `{"geo_locations":{"countries":["MY"],"location_types":["home","recent"]},"age_min":18,"locales":[41,6,24,20,21,22]}`
@@ -79,8 +85,8 @@ For each creative, plus each video cover:
    - `ad_account_id`, `page_id`, `name: "<campaign> | <kind><n> | <lang>"`
    - Image: `image_hash`. Video: `video_id` + thumbnail (`image_hash` of the cover, else `image_url` = the video's `picture`).
    - `message` = primary_text, `headline` = headline for its language.
-   - `call_to_action_type: "MESSAGE_PAGE"` (no `link_url`). This matches the live G3 creatives.
-   - `degrees_of_freedom_spec`: the multi-destination spec from `defaults.creative.degrees_of_freedom_spec`. If that is still null, create the first creative, read the error Meta returns ("Creative is missing DOF spec…"), and build the spec it asks for (`ads_get_help_article` if unclear). Then save the working spec to `config/defaults.json`.
+   - `call_to_action_type`: `"WHATSAPP_MESSAGE"` for a WHATSAPP ad set, or `"MESSAGE_PAGE"` for MESSENGER (no `link_url`).
+   - If the ad set really is multi-destination and Meta asks for a `degrees_of_freedom_spec` ("Creative is missing DOF spec…"), build the spec the error describes and save the working spec to `config/defaults.json`.
    - `instagram_user_id` from config if not null.
    - Do not set `self_ai_disclosure` yourself. If the user said media is AI-made, ask.
 
@@ -95,9 +101,10 @@ For each creative, plus each video cover:
 ## Step 6: Final approval (STOP #2)
 Show the campaign, ad set and ad IDs, preview links, warnings, and the Drive files to un-share.
 Ask: "Publish now? It goes live and starts spending RM<x>/day."
-- On an explicit yes: `ads_activate_entity` with `entity_type: "campaign"`, `entity_id: <campaign_id>`, and `object_ids` = [campaign, ad set, all ads] (from the draft read). Set `publish_as_active: true` only if they said go live.
+- If the objects are PAUSED (not drafts): on an explicit yes, call `ads_activate_entity` top-down, one call each for the campaign, the ad set and every ad.
+- If they are drafts: on an explicit yes, `ads_activate_entity` with `entity_type: "campaign"`, `entity_id: <campaign_id>`, and `object_ids` = [campaign, ad set, all ads] (from the draft read). Set `publish_as_active: true` only if they said go live.
 - Verify with live `ads_get_ad_entities` (`level: campaign`, `object_ids`, fields `id,name,effective_status,daily_budget`). Report the real status. `PUBLISHING` or `IN_REVIEW` is not "live yet".
-- On "no" or "later", leave it in draft and say where it is (Ads Manager → Drafts).
+- On "no" or "later", leave it paused or in draft and say where it is in Ads Manager.
 
 ## Step 7: Log
 Write `launches/<yyyy-mm-dd>-<account>-<slug>.md` containing:

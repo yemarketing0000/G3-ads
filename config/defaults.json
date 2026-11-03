@@ -9,7 +9,7 @@
   },
   "ad_set": {
     "name": "Broad",
-    "destination_type": "MESSAGING_MESSENGER_WHATSAPP",
+    "destination_type": "WHATSAPP",
     "optimization_goal": "CONVERSATIONS",
     "billing_event": "IMPRESSIONS",
     "promoted_object": "{\"page_id\": \"<page_id>\"}",
@@ -25,9 +25,10 @@
       "home",
       "recent"
     ],
-    "destination_comment": "Messenger + WhatsApp (same as live 'Broad 1 - pic'). Meta routes each person to the app they reply on most.",
-    "destination_type_alt_whatsapp_only": "WHATSAPP",
-    "destination_type_alt_messenger_only": "MESSENGER"
+    "destination_comment": "Target is Messenger + WhatsApp (MESSAGING_MESSENGER_WHATSAPP, like live 'Broad 1 - pic'), but the Meta MCP create tool rejects that value (2026-11-03 dry run). So: create with WHATSAPP, then the user flips Ad set > Message destination to 'Messenger and WhatsApp' in Ads Manager before publishing. Try MESSAGING_MESSENGER_WHATSAPP first on each launch in case the tool starts accepting it.",
+    "destination_type_alt_messenger_only": "MESSENGER",
+    "destination_type_target": "MESSAGING_MESSENGER_WHATSAPP",
+    "requires_verified_advertiser_MY": "Malaysia targeting needs a verified advertiser/payer. Set once per ad account: Ads Manager (desktop) > Advertising settings > Default advertiser and payer > Malaysia."
   },
   "languages": {
     "comment": "Meta locale IDs copied from the live 'Broad 1 - pic' ad set in G3 Setapak (proven to work).",
@@ -50,7 +51,7 @@
     ]
   },
   "creative": {
-    "call_to_action_type": "MESSAGE_PAGE",
+    "call_to_action_type": "WHATSAPP_MESSAGE",
     "max_creatives": 10,
     "file_pattern_pic": "^\\s*(pic|picture|image|img)\\s*[-_ ]?\\s*(\\d{1,2})\\b",
     "file_pattern_video": "^\\s*(video|vid)\\s*[-_ ]?\\s*(\\d{1,2})\\b",
@@ -61,7 +62,7 @@
       "CN"
     ],
     "ad_name_pattern": "{kind}{n} | {lang}",
-    "cta_comment": "MESSAGE_PAGE matches the user's live creatives. WhatsApp-only fallback uses WHATSAPP_MESSAGE.",
+    "cta_comment": "Use WHATSAPP_MESSAGE with a WHATSAPP ad set; MESSAGE_PAGE for MESSENGER. When the destination becomes Messenger+WhatsApp, Meta keeps a 'Send message' button.",
     "degrees_of_freedom_spec": null,
     "degrees_of_freedom_spec_comment": "Multi-destination creatives need a DOF spec. Filled in from the first dry run; until then use what Meta's active_errors asks for."
   },

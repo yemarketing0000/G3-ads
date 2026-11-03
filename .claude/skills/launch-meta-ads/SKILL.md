@@ -30,11 +30,12 @@ Collect the following, and ask for anything that's missing in one message:
 ## Step 2: Scan Drive
 1. `mcp__Google_Drive__search_files` with `parentId = '<folderId>'`, `excludeContentSnippets: true`, pageSize 100.
 2. Match files with `defaults.creative.file_pattern_pic` / `file_pattern_video` (case-insensitive). Examples: "pic1.jpg", "Pic 3 promo.png", "Video 2 RM99.mp4". Sort by number and keep 1–10. Covers matching `cover_pattern` (e.g. "video1-cover.jpg", "Video 1 封面.jpg") become the thumbnail for that video number.
-3. Find the copy file. It is a Google Doc or .txt whose title contains "copy", "caption" or "text". Read it with `read_file_content` and parse it as in `templates/copy-template.md`:
-   - `[BM]`, `[EN]` and `[CN]` sections, each with `primary_text:` (can be multi-line until the next key or section) and `headline:`.
-   - Optional `assign:` line (`pic1=BM, pic2=CN, video3=EN`).
-   - Unassigned creatives rotate BM → EN → CN in number order.
-4. Stop and tell the user if any of these is true: no copy file, a language section is missing for a language that is in use, zero matching creatives, more than 10 creatives, or a file type that isn't jpg/png/gif/mp4/mov.
+3. Find the caption file. It is a Google Doc or .txt whose title contains "caption", "copy" or "text". Look in the creative folder first, then in its parent folder (the user may keep one "caption" doc next to the pic/video folder). If several match, ask which one. Read it with `read_file_content`. Two formats are supported (`templates/copy-template.md`):
+   - **Per content (preferred by the user):** one section per creative, e.g. `[pic1]` or `[video3]`, each with `headline:` and `caption:` (or `primary_text:`). An optional `lang: BM|EN|CN` line sets the language label; otherwise detect it from the text. Each creative gets exactly its own section.
+   - **Per language:** `[BM]`, `[EN]` and `[CN]` sections with `headline:` and `primary_text:`, plus an optional `assign:` line (`pic1=BM, video3=EN`). Unassigned creatives rotate BM → EN → CN.
+   - Text continues over several lines until the next key or `[section]`. Keep emojis, line breaks, links and phone numbers exactly as written.
+   - In the Step 3 table, show the headline plus the first line of the caption for each ad, so the user can spot a mismatch.
+4. Stop and tell the user if any of these is true: no caption file, a creative with no caption section (per-content format), a language section missing for a language in use (per-language format), a caption section with no matching file, zero matching creatives, more than 10 creatives, or a file type that isn't jpg/png/gif/mp4/mov.
 
 ## Step 3: Verification check (STOP #1)
 Show this and wait for OK or edits:

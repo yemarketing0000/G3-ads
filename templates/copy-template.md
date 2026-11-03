@@ -1,43 +1,61 @@
-# Copy file template
+# Caption file template
 
-Put a Google Doc or `.txt` named **`copy`** (or anything with "copy", "caption" or "text" in the title) inside each campaign folder in Drive.
-Write it exactly like the example below. Claude reads it and uses the text **as written**. It does not rewrite your copy.
+Make a Google Doc named **`caption`**. Put it inside the pic/video folder, or right next to it in the parent folder.
+Claude reads it and uses the text **exactly as written**, with the same emojis, line breaks, links and phone numbers. Meta's automatic text rewriting is switched off.
+
+## Format A: one section per content (recommended)
+Each pic/video gets its own headline and caption. The section name must match the file number.
+
+```
+[pic1]
+headline: Tint Kereta RM299 Satu Kereta
+caption:
+🔥 RM299 BOLEH TINTED SATU KERETA?!
+✅ IRR 95% tahan haba
+✅ 5 tahun warranty
+📲 Klik button di bawah untuk BOOK SLOT!
+
+[pic2]
+headline: Car Tint from RM299
+caption:
+🚗 Beat the heat with G3 Pro Tint!
+✅ 95% heat rejection, 5-year warranty
+📲 Message us to book your slot!
+
+[video1]
+headline: 汽车隔热膜 RM299 全车
+caption:
+🔥 RM299 全车贴膜！
+✅ 95% 隔热，5年保修
+📲 点击下方按钮预约！
+```
+
+- `lang: BM` / `lang: EN` / `lang: CN` is optional. Without it, Claude works out the language from the text. It's only used for the ad name, e.g. `pic1 | BM`.
+- Any pic/video without a section is flagged in the check table. Nothing gets made up.
+
+## Format B: one section per language (shared text)
+Use this when several pics/videos share the same text.
 
 ```
 [BM]
-headline: Tint Kereta Premium dari RM99
+headline: ...
 primary_text:
-🚗 Panas terik? Pasang tint G3 Pro sekarang!
-✅ Tolak haba sehingga 80%
-✅ Waranti 7 tahun
-📍 G3 Pro Tint Setapak
-WhatsApp kami untuk sebut harga percuma 👇
+...
 
 [EN]
-headline: Premium Car Tint from RM99
+headline: ...
 primary_text:
-🚗 Beat the heat with G3 Pro Tint!
-✅ Up to 80% heat rejection
-✅ 7-year warranty
-📍 G3 Pro Tint Setapak
-WhatsApp us for a free quote 👇
+...
 
 [CN]
-headline: 高级汽车隔热膜 RM99起
+headline: ...
 primary_text:
-🚗 天气太热？马上来 G3 Pro Tint 贴膜！
-✅ 高达80%隔热
-✅ 7年保修
-📍 G3 Pro Tint Setapak
-WhatsApp 我们免费报价 👇
+...
 
-assign: video1=BM, video2=CN, video3=EN
+assign: pic1=BM, pic2=CN, video1=EN
 ```
+Creatives not listed in `assign:` rotate BM → EN → CN.
 
-Rules:
-- `[BM]`, `[EN]` and `[CN]` sections. Leave a language out only if no creative uses it.
-- `headline:` is one line. Keep it short (about 40 characters or less).
-- `primary_text:` can run over several lines, up to the next `headline:`, `[SECTION]` or `assign:`.
-- `assign:` is optional. Any creative not listed gets a language in rotation BM → EN → CN by number.
-- File names in the folder: `pic1.jpg … pic10.jpg` or `video1.mp4 … video10.mp4`. Names like `Video 1 RM99.mp4` also work.
-- Optional video thumbnail: `video1-cover.jpg` or `Video 1 封面.jpg`.
+## File names in the folder
+`pic1.jpg … pic10.jpg` and/or `video1.mp4 … video10.mp4`. Names like `Pic 1 promo.jpg` or `Video 1 RM99.mp4` also work. The number is what matters.
+Optional video thumbnail: `video1-cover.jpg` or `Video 1 封面.jpg`.

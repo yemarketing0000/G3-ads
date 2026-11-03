@@ -47,6 +47,10 @@ Do the maths with a short Python script (`python3 -I`) on the JSON numbers. Don'
   8. Footer: "Data: Meta Ads, yesterday in MYT. Messages = Messenger + WhatsApp conversations started. Numbers can shift slightly as Meta finalises."
 - `body`: a plain-text version of points 1–5.
 
+**WhatsApp** (via the Bird connector), once a workspace sender number is connected and the `g3_daily_ads_report` template is approved:
+- `mcp__Bird__whatsapp_send` with `to: "+60123828281"`, `from: <connected Bird number>`, `template: {slug: "g3_daily_ads_report", language: "en", components: [...]}`. Fill the template's body parameters with the summary values. Plain text only, so no tables.
+- Status 2026-11-03: **not active yet**. The Bird workspace has no connected WhatsApp number or business account. Until it does, skip WhatsApp and say so in the run summary.
+
 **Phone alert**, if the `PushNotification` tool is available: one line under 200 characters, e.g.
 `G3 2 Nov: RM1,342 spent, 91 msgs, RM14.75/msg. Best: SA Pic 1 RM10.46. Worst: SA Pic 5 RM62.22. Report in email.`
 

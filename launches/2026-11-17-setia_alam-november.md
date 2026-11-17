@@ -23,7 +23,7 @@
 | 9 | 1j4k6yOfhAErDUefCE-QVjEfY32DmQOKu | 67fc3a43c9f82c3699aba2a2c4e351a8 | 120256142186120119 |
 | 10 | 1QfbqQeOUzeH6o1XXjHW3iNN2Ai7wc7Rw | dcb49af8123f4bfecc0bd7a462387c80 | 120256142193650119 |
 
-Status: all 10 are DRAFT, validation_status VALIDATED, active_errors []. **Waiting for the user's "publish".**
+Status: published 2026-11-17 on the user's "publish". All 10 are now real ads in the Broad ad set, effective_status IN_PROCESS (Meta processing/review). Daily report 18 Nov will show first results.
 
 ## Learned this launch
 - Private media path works: `Google_Drive download_file_content` saves the file to disk → `ads_create_upload_url` + curl to rupload.facebook.com (host added to the "G3 ads" environment) → `ads_finalize_upload`. No Drive link-sharing needed.

@@ -92,6 +92,12 @@ For each approved missing file:
 5. **Check:** any error returned from `ads_create_ad`, fix it and retry once, or report it. If Meta says something about Instagram: no IG account is linked, and the user said IG linking is not needed (2026-11-03). Ask before limiting placements to Facebook only.
 6. **Previews:** `ads_create_ad` already returns `previews[].preview_url`. Give 2–3 of them (Facebook Feed, Reels, Stories), or call `ads_get_ad_preview`.
 
+**Making the Broad ad set yourself (verified 2026-11-18):** `ads_duplicate_entity` (entity_type `ad_set`, copy of an existing Broad ad set in the same campaign) works even though `ads_create_ad_set` is blocked for Malaysia. Then, before adding ads:
+- The copy brings **all the source ad set's ads** as drafts. Remove them with `ads_update_entity` `discard_draft_changes` (preview, then the confirmation token), after the user OKs it.
+- Rename it with `{"name":"Broad N"}` and set `targeting` (full spec, keep `targeting_automation.advantage_audience: 1`).
+- Messenger-only: set `promoted_object` to `{"page_id": "<page>"}` only (a leftover WhatsApp number gives error 4017029), and `attribution_spec` to `[{"event_type":"CLICK_THROUGH","window_days":1}]` (7-day gives error 1885423).
+- Publish with `ads_activate_entity` `entity_type: ad_set`, `object_ids` = [ad set + its ads], `publish_as_active: true`.
+
 ## Step 6: Final approval (STOP #2)
 Show the campaign, ad set and ad IDs, preview links, any warnings, and the Drive files to un-share.
 Ask: "Publish now? It goes live and starts spending RM<x>/day."

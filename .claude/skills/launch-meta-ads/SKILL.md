@@ -92,7 +92,7 @@ For each approved missing file:
 5. **Check:** any error returned from `ads_create_ad`, fix it and retry once, or report it. If Meta says something about Instagram: no IG account is linked, and the user said IG linking is not needed (2026-11-03). Ask before limiting placements to Facebook only.
 6. **Previews:** `ads_create_ad` already returns `previews[].preview_url`. Give 2–3 of them (Facebook Feed, Reels, Stories), or call `ads_get_ad_preview`.
 
-**Creating a new Broad ad set directly (verified 2026-11-19, works on both accounts):**
+**Creating a new Broad ad set directly (verified 2026-11-19 on Setia Alam; expected to work on Setapak too, same business):**
 1. `ads_create_ad_set` with `campaign_id`, `ad_set_name: "Broad N"`, `source_adset_id` (an existing Broad), `billing_event: IMPRESSIONS`, `optimization_goal: CONVERSATIONS`, `destination_type: MESSENGER` (multi-destination is rejected at create), `promoted_object: {"page_id": ...}`, and `targeting` (geo + `age_min: 18` + locales; omit `targeting_automation`). It comes back as a DRAFT with error 3858634 "Advertiser is missing".
 2. `ads_update_entity` → `{"regional_regulated_categories":["MALAYSIA_UNIVERSAL"],"regional_regulation_identities":{"universal_beneficiary":"941546658825565","universal_payer":"941546658825565"}}` (the business's verified advertiser). The error clears.
 3. For Messenger + WhatsApp: `ads_update_entity` → `{"destination_type":"MESSAGING_MESSENGER_WHATSAPP"}` (only if the Page's WhatsApp is connected).

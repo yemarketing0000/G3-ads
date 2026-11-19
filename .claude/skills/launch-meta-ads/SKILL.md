@@ -92,7 +92,14 @@ For each approved missing file:
 5. **Check:** any error returned from `ads_create_ad`, fix it and retry once, or report it. If Meta says something about Instagram: no IG account is linked, and the user said IG linking is not needed (2026-11-03). Ask before limiting placements to Facebook only.
 6. **Previews:** `ads_create_ad` already returns `previews[].preview_url`. Give 2–3 of them (Facebook Feed, Reels, Stories), or call `ads_get_ad_preview`.
 
-**Making the Broad ad set yourself (verified 2026-11-18):** `ads_duplicate_entity` (entity_type `ad_set`, copy of an existing Broad ad set in the same campaign) works even though `ads_create_ad_set` is blocked for Malaysia. Then, before adding ads:
+**Creating a new Broad ad set directly (verified 2026-11-19, works on both accounts):**
+1. `ads_create_ad_set` with `campaign_id`, `ad_set_name: "Broad N"`, `source_adset_id` (an existing Broad), `billing_event: IMPRESSIONS`, `optimization_goal: CONVERSATIONS`, `destination_type: MESSENGER` (multi-destination is rejected at create), `promoted_object: {"page_id": ...}`, and `targeting` (geo + `age_min: 18` + locales; omit `targeting_automation`). It comes back as a DRAFT with error 3858634 "Advertiser is missing".
+2. `ads_update_entity` → `{"regional_regulated_categories":["MALAYSIA_UNIVERSAL"],"regional_regulation_identities":{"universal_beneficiary":"941546658825565","universal_payer":"941546658825565"}}` (the business's verified advertiser). The error clears.
+3. For Messenger + WhatsApp: `ads_update_entity` → `{"destination_type":"MESSAGING_MESSENGER_WHATSAPP"}` (only if the Page's WhatsApp is connected).
+4. Add ads, then publish with `entity_type: ad_set`, `object_ids` = [ad set + ads] so unrelated staged edits in Ads Manager are not published.
+Prefer this over duplicating (no copied ads to clean up; `ads_duplicate_entity` is unavailable on Setia Alam).
+
+**Alternative — duplicating (verified 2026-11-18, Setapak only):** `ads_duplicate_entity` (entity_type `ad_set`, copy of an existing Broad ad set in the same campaign) works even though `ads_create_ad_set` is blocked for Malaysia. Then, before adding ads:
 - The copy brings **all the source ad set's ads** as drafts. Remove them with `ads_update_entity` `discard_draft_changes` (preview, then the confirmation token), after the user OKs it.
 - Rename it with `{"name":"Broad N"}` and set `targeting` (full spec, keep `targeting_automation.advantage_audience: 1`).
 - Messenger-only: set `promoted_object` to `{"page_id": "<page>"}` only (a leftover WhatsApp number gives error 4017029), and `attribution_spec` to `[{"event_type":"CLICK_THROUGH","window_days":1}]` (7-day gives error 1885423).
